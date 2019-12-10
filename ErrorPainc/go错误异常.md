@@ -34,3 +34,22 @@ func main() {
 捕获异常不是最终的目的.如果异常不可预测,直接输出异常信息是最好的处理方式.
 
 #### 错误处理策略
+让我们演示一个文件复制的例子:函数需要打开两个文件,然后将其中一个文件的内容复制到另一个文件:
+```
+func CopyFile(destName,srcName string)(written int64, err error) {
+	src, err := os.Open(srcName)
+	if err != nil {
+		return
+	}
+	dst,err := os.Create(destName)
+	if err != nil{
+		return
+	}
+	defer src.Close()
+
+	return io.Copy(dst, src)
+}
+
+```
+defer 语句可以让我们在打开文件时马上思考如何关闭文件,不管函数如何返回,文件关闭四纵会被执行.同时defer语句可以保证,即使io.Copy 发生了异常,文件依然可以安全关闭.
+前文我们说到,Go语言中的导出函数一般不抛出异常,一个未受控的异常可以看作是程序的BUG.
